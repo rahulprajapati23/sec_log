@@ -500,29 +500,32 @@ body {
 
 @media (max-width: 480px) {
   .login-page {
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start; /* Move content to top */
     background: var(--bg-primary);
+    padding-top: 20px;
   }
 
   .hero-panel {
     min-height: auto;
-    padding: 40px 20px 20px;
+    padding: 20px 20px 0px; /* Reduced top/bottom padding */
   }
 
   .hero-tagline {
-    display: none; /* Hide tagline on mobile */
+    display: none;
   }
 
   .instagram-logo {
-    width: 60px;
-    height: 60px;
+    width: 52px; /* Slightly smaller logo */
+    height: 52px;
     margin-bottom: 0;
   }
 
   .login-panel {
     padding: 0 20px;
     border-top: none;
-    flex: 0; /* Let it center */
+    flex: 0;
+    margin-top: -10px; /* Pull form closer to logo */
   }
 
   .login-card {
@@ -966,13 +969,15 @@ body {
 
 @media (max-width: 480px) {
   .fb-login-page {
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     background: #f0f2f5;
+    padding-top: 20px;
   }
 
   .fb-hero-panel {
     min-height: auto;
-    padding: 40px 20px 20px;
+    padding: 20px 20px 0px;
   }
 
   .fb-hero-tagline {
@@ -980,8 +985,8 @@ body {
   }
 
   .fb-logo {
-    width: 60px;
-    height: 60px;
+    width: 52px;
+    height: 52px;
     margin-bottom: 0;
   }
 
@@ -989,6 +994,7 @@ body {
     padding: 0 20px;
     border-top: none;
     flex: 0;
+    margin-top: -10px;
   }
 
   .fb-login-card {
