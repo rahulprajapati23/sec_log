@@ -219,7 +219,7 @@ body {
   padding: 14px 16px;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: 24px; /* More rounded */
   color: var(--text-primary);
   font-size: 0.95rem;
   font-family: var(--font-family);
@@ -248,7 +248,7 @@ body {
   background: var(--accent-blue);
   color: white;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 24px; /* More rounded */
   font-size: 0.95rem;
   font-weight: 600;
   font-family: var(--font-family);
@@ -499,25 +499,37 @@ body {
 }
 
 @media (max-width: 480px) {
+  .login-page {
+    justify-content: center;
+    background: var(--bg-primary);
+  }
+
   .hero-panel {
-    display: none; /* Hide hero on small mobile to focus on login */
+    min-height: auto;
+    padding: 40px 20px 20px;
+  }
+
+  .hero-tagline {
+    display: none; /* Hide tagline on mobile */
+  }
+
+  .instagram-logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0;
   }
 
   .login-panel {
-    padding: 20px;
-    background: transparent;
+    padding: 0 20px;
+    border-top: none;
+    flex: 0; /* Let it center */
   }
 
   .login-card {
     max-width: 100%;
-    padding: 30px 20px;
+    padding: 20px;
     background: transparent;
     box-shadow: none;
-  }
-
-  .instagram-logo {
-    display: block;
-    margin: 0 auto 40px;
   }
 }
 
@@ -767,7 +779,7 @@ body {
   padding: 14px 16px;
   background: #ffffff;
   border: 1px solid #dde2e8;
-  border-radius: 8px;
+  border-radius: 24px; /* More rounded */
   color: #0a1317;
   font-size: 0.95rem;
   font-family: var(--font-family);
@@ -796,7 +808,7 @@ body {
   background: #0866FF;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 24px; /* More rounded */
   font-size: 0.95rem;
   font-weight: 700;
   font-family: var(--font-family);
@@ -860,7 +872,7 @@ body {
   background: transparent;
   color: #0866FF;
   border: 1.5px solid #0866FF;
-  border-radius: 8px;
+  border-radius: 24px; /* More rounded */
   font-size: 0.9rem;
   font-weight: 600;
   font-family: var(--font-family);
@@ -953,18 +965,35 @@ body {
 }
 
 @media (max-width: 480px) {
+  .fb-login-page {
+    justify-content: center;
+    background: #f0f2f5;
+  }
+
   .fb-hero-panel {
+    min-height: auto;
+    padding: 40px 20px 20px;
+  }
+
+  .fb-hero-tagline {
     display: none;
   }
 
+  .fb-logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0;
+  }
+
   .fb-login-panel {
-    padding: 20px;
-    background: transparent;
+    padding: 0 20px;
+    border-top: none;
+    flex: 0;
   }
 
   .fb-login-card {
     max-width: 100%;
-    padding: 30px 20px;
+    padding: 20px;
     background: transparent;
     box-shadow: none;
   }
