@@ -501,14 +501,18 @@ body {
 @media (max-width: 480px) {
   .login-page {
     flex-direction: column;
-    justify-content: flex-start; /* Move content to top */
-    background: var(--bg-primary);
-    padding-top: 20px;
+    justify-content: center; /* Center everything as one unit */
+    align-items: center;
+    background: var(--bg-primary); /* Uniform background */
+    padding: 20px;
+    min-height: 100vh;
   }
 
   .hero-panel {
     min-height: auto;
-    padding: 20px 20px 0px; /* Reduced top/bottom padding */
+    padding: 0;
+    margin-bottom: 30px; /* Space between logo and title */
+    background: transparent;
   }
 
   .hero-tagline {
@@ -516,23 +520,31 @@ body {
   }
 
   .instagram-logo {
-    width: 52px; /* Slightly smaller logo */
-    height: 52px;
-    margin-bottom: 0;
+    width: 64px;
+    height: 64px;
+    margin: 0;
   }
 
   .login-panel {
-    padding: 0 20px;
-    border-top: none;
-    flex: 0;
-    margin-top: -10px; /* Pull form closer to logo */
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent; /* Remove the bluish-gray background */
+    flex: none;
   }
 
   .login-card {
     max-width: 100%;
-    padding: 20px;
+    padding: 0;
     background: transparent;
     box-shadow: none;
+    animation: none;
+  }
+
+  .login-title {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 1.4rem;
   }
 }
 
@@ -970,14 +982,18 @@ body {
 @media (max-width: 480px) {
   .fb-login-page {
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: center;
     background: #f0f2f5;
-    padding-top: 20px;
+    padding: 20px;
+    min-height: 100vh;
   }
 
   .fb-hero-panel {
     min-height: auto;
-    padding: 20px 20px 0px;
+    padding: 0;
+    margin-bottom: 30px;
+    background: transparent;
   }
 
   .fb-hero-tagline {
@@ -985,22 +1001,28 @@ body {
   }
 
   .fb-logo {
-    width: 52px;
-    height: 52px;
-    margin-bottom: 0;
+    width: 64px;
+    height: 64px;
+    margin: 0;
   }
 
   .fb-login-panel {
-    padding: 0 20px;
-    border-top: none;
-    flex: 0;
-    margin-top: -10px;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    flex: none;
   }
 
   .fb-login-card {
     max-width: 100%;
-    padding: 20px;
+    padding: 0;
     background: transparent;
     box-shadow: none;
+  }
+
+  .fb-login-title {
+    text-align: center;
+    margin-bottom: 24px;
   }
 }
