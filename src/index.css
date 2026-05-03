@@ -501,17 +501,21 @@ body {
 @media (max-width: 480px) {
   .login-page {
     flex-direction: column;
-    justify-content: center; /* Center everything as one unit */
-    align-items: center;
-    background: var(--bg-primary); /* Uniform background */
-    padding: 20px;
+    justify-content: flex-start;
+    align-items: stretch;
+    background: var(--bg-primary);
+    padding: 0;
     min-height: 100vh;
   }
 
   .hero-panel {
+    height: 30vh; /* Top 30% for logo */
     min-height: auto;
     padding: 0;
-    margin-bottom: 30px; /* Space between logo and title */
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: transparent;
   }
 
@@ -520,31 +524,34 @@ body {
   }
 
   .instagram-logo {
-    width: 64px;
-    height: 64px;
-    margin: 0;
+    width: 72px;
+    height: 72px;
   }
 
   .login-panel {
+    height: 70vh; /* Bottom 70% for form */
     width: 100%;
-    padding: 0;
+    padding: 20px;
     border: none;
-    background: transparent; /* Remove the bluish-gray background */
-    flex: none;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
   }
 
   .login-card {
-    max-width: 100%;
+    width: 100%;
+    max-width: 400px;
     padding: 0;
     background: transparent;
     box-shadow: none;
-    animation: none;
   }
 
   .login-title {
     text-align: center;
-    margin-bottom: 24px;
-    font-size: 1.4rem;
+    margin-bottom: 32px;
+    font-size: 1.5rem;
   }
 }
 
@@ -982,17 +989,21 @@ body {
 @media (max-width: 480px) {
   .fb-login-page {
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: stretch;
     background: #f0f2f5;
-    padding: 20px;
+    padding: 0;
     min-height: 100vh;
   }
 
   .fb-hero-panel {
+    height: 30vh;
     min-height: auto;
     padding: 0;
-    margin-bottom: 30px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: transparent;
   }
 
@@ -1001,21 +1012,25 @@ body {
   }
 
   .fb-logo {
-    width: 64px;
-    height: 64px;
-    margin: 0;
+    width: 72px;
+    height: 72px;
   }
 
   .fb-login-panel {
+    height: 70vh;
     width: 100%;
-    padding: 0;
+    padding: 20px;
     border: none;
     background: transparent;
-    flex: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
   }
 
   .fb-login-card {
-    max-width: 100%;
+    width: 100%;
+    max-width: 400px;
     padding: 0;
     background: transparent;
     box-shadow: none;
@@ -1023,6 +1038,6 @@ body {
 
   .fb-login-title {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
   }
 }
