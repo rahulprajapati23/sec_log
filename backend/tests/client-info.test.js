@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { generateClientInfoPayload, getClientIpMetadata, normalizeClientInfo } = require('../utils/clientInfo');
+const { generateClientInfoPayload, getClientIpMetadata, normalizeClientInfo, formatTelegramClientInfo } = require('../utils/clientInfo');
 
 test('normalizes browser and server payloads without trusting client IPs', () => {
   const sample = {
@@ -101,4 +101,65 @@ test('adds server metadata to a valid client payload', () => {
   assert.equal(payload.server.publicIp, '203.0.113.42');
   assert.equal(payload.server.ipVersion, 'IPv4');
   assert.equal(payload.browser.name, 'Safari');
+});
+
+test('formats a compact Telegram client summary that stays within Telegram limits', () => {
+  const payload = {
+    browser: {
+      name: 'Chrome',
+      version: '127.0.0.1',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.1 Safari/537.36',
+      platform: 'Win32',
+      language: 'en-US',
+      timezone: 'UTC',
+      languages: ['en-US', 'en']
+    },
+    system: {
+      os: 'Windows',
+      osVersion: '11',
+      architecture: 'x64',
+      deviceType: 'desktop'
+    },
+    device: {
+      type: 'desktop',
+      touchSupport: false,
+      maxTouchPoints: 0
+    },
+    screen: {
+      width: 1920,
+      height: 1080,
+      availableWidth: 1880,
+      availableHeight: 1040,
+      pixelRatio: 1.5
+    },
+    connection: {
+      type: 'wifi',
+      effectiveType: '4g',
+      downlink: 50,
+      rtt: 25,
+      online: true
+    },
+    capabilities: {
+      webgl: true,
+      webgl2: true,
+      webAssembly: true,
+      indexedDB: true,
+      serviceWorker: true,
+      rtcPeerConnection: true,
+      geolocation: true,
+      notifications: true,
+      webSocket: true
+    },
+    server: {
+      publicIp: '203.0.113.44',
+      ipVersion: 'IPv4',
+      receivedAt: '2026-08-12T00:00:00.000Z'
+    }
+  };
+
+  const message = formatTelegramClientInfo(payload);
+
+  assert.ok(message.includes('Browser:'));
+  assert.ok(message.includes('Capabilities:'));
+  assert.ok(message.length <= 4096, `Telegram message is too long: ${message.length} chars`);
 });

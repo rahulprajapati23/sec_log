@@ -215,6 +215,42 @@ const generateClientInfoPayload = (payload = {}, serverMeta = {}) => {
   };
 };
 
+const formatTelegramClientInfo = (clientPayload = {}) => {
+  const browser = clientPayload.browser || {};
+  const system = clientPayload.system || {};
+  const device = clientPayload.device || {};
+  const screen = clientPayload.screen || {};
+  const connection = clientPayload.connection || {};
+  const capabilities = clientPayload.capabilities || {};
+  const server = clientPayload.server || {};
+
+  const lines = [
+    'New client environment detected:',
+    `IP: ${server.publicIp || 'unknown'}`,
+    `Browser: ${browser.name || 'unknown'} ${browser.version || ''}`.trim(),
+    `OS: ${system.os || 'unknown'} ${system.osVersion || ''}`.trim(),
+    `Device: ${device.type || 'unknown'} / ${system.deviceType || 'unknown'}`,
+    `Screen: ${screen.width || 'n/a'}x${screen.height || 'n/a'}`,
+    `Network: ${connection.effectiveType || 'n/a'} / ${connection.type || 'n/a'}`,
+    `Timezone: ${browser.timezone || 'n/a'}`,
+    `Language: ${browser.language || 'n/a'}`,
+    `Capabilities: ${[
+      capabilities.webgl ? 'webgl' : null,
+      capabilities.webgl2 ? 'webgl2' : null,
+      capabilities.webAssembly ? 'wasm' : null,
+      capabilities.webSocket ? 'websocket' : null,
+      capabilities.indexedDB ? 'indexeddb' : null,
+      capabilities.serviceWorker ? 'service-worker' : null,
+      capabilities.geolocation ? 'geolocation' : null,
+      capabilities.notifications ? 'notifications' : null,
+      capabilities.rtcPeerConnection ? 'webrtc' : null
+    ].filter(Boolean).join(', ') || 'none detected'}`
+  ];
+
+  const message = lines.join('\n');
+  return message.length > 4096 ? `${message.slice(0, 4000)}\n... (truncated)` : message;
+};
+
 const createPersistedClientInfoRecord = (payload = {}, req = null) => {
   const serverMeta = req ? getClientIpMetadata(req, { trustedProxyIps: process.env.TRUSTED_PROXY_IPS?.split(',') || [] }) : {};
   const record = generateClientInfoPayload(payload, serverMeta);
@@ -227,6 +263,7 @@ module.exports = {
   normalizeClientInfo,
   getClientIpMetadata,
   generateClientInfoPayload,
+  formatTelegramClientInfo,
   createPersistedClientInfoRecord,
   sanitizeString,
   sanitizeMap

@@ -4,7 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
 const fetch = require('node-fetch');
-const { normalizeClientInfo, getClientIpMetadata, sanitizeString } = require('./utils/clientInfo');
+const { normalizeClientInfo, getClientIpMetadata, sanitizeString, formatTelegramClientInfo } = require('./utils/clientInfo');
 
 const app = express();
 const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000').split(',').map((origin) => origin.trim()).filter(Boolean);
@@ -79,42 +79,30 @@ const sendClientInfoTelegramAlert = async (clientPayload) => {
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
   if (!token || !chatId || !clientPayload) {
+    console.log('[DEBUG] Telegram client-info disabled: missing token/chat id or payload');
     return;
   }
 
-  const summary = {
-    browser: clientPayload.browser,
-    os: clientPayload.system,
-    device: clientPayload.device,
-    screen: clientPayload.screen,
-    connection: clientPayload.connection,
-    capabilities: clientPayload.capabilities,
-    server: clientPayload.server
-  };
-
-  const message = [
-    'New client environment detected:',
-    `IP: ${clientPayload.server?.publicIp || 'unknown'}`,
-    `Browser: ${clientPayload.browser?.name || 'unknown'} ${clientPayload.browser?.version || ''}`,
-    `OS: ${clientPayload.system?.os || 'unknown'} ${clientPayload.system?.osVersion || ''}`,
-    `Device: ${clientPayload.device?.type || 'unknown'}`,
-    `Screen: ${clientPayload.screen?.width || 'n/a'}x${clientPayload.screen?.height || 'n/a'}`,
-    `Network: ${clientPayload.connection?.effectiveType || 'n/a'} / ${clientPayload.connection?.type || 'n/a'}`,
-    `Timezone: ${clientPayload.browser?.timezone || 'n/a'}`,
-    `Language: ${clientPayload.browser?.language || 'n/a'}`,
-    `JSON: ${JSON.stringify(summary)}`
-  ].join('\n');
+  const message = formatTelegramClientInfo(clientPayload);
 
   try {
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: chatId,
         text: message,
-        disable_web_page_preview: true
+        disable_web_page_preview: true,
+        parse_mode: 'Markdown'
       })
     });
+
+    const result = await response.json();
+    if (result.ok) {
+      console.log('[DEBUG] Client info Telegram alert sent successfully.');
+    } else {
+      console.error('[DEBUG] Client info Telegram API error:', result.description || result);
+    }
   } catch (error) {
     console.error('[DEBUG] Failed to send client info Telegram alert:', error.message);
   }
